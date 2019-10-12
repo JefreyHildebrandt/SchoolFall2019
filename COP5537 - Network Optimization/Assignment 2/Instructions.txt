@@ -1,0 +1,35 @@
+Our second homework assignment is implementation of the Fleury's algorithm to find an Euler circuit on a graph. In the Fleury's algorithm, after choosing an edge leaving the current vertex, run Prim's algorithm to check deleting that edge will not separate the graph into two disconnected sets of edges.
+
+Dataset:
+
+Click herePreview the document for the adjacency matrix of a simple connected graph on 100 vertices.
+
+Input and output format:
+
+Input: (1) There are two parts in the input file. The first column represents the labels (indices) of the vertices, start from 0. The second part represents the adjacency matrix, and each row represents the connections from that vertex to the other vertices in the network. The two parts are separated by tab and the elements in the adjacency matrix are separated by comma. (2) Your program need to read the input file first, and a function, e.g., Fleury(A,s), must be implemented to find an Euler circuit starting with vertex s, where A is the input matrix.
+
+Output: Your program will output a text file which contains the Euler circuit and the vertices are separated by comma. For example, if you found a Euler circuit start with vertex '12', the output will look like (this is not a true one):
+
+12, 6, 23, 36, ..., 95, 27, 12.
+
+
+
+Problems:
+
+1. (20 points): Write the pseudo code of Fleury's algorithm and Prim's algorithm (only the algorithms part, input and output parts are not necessary) either by Word/Latex (convert to PDF) or by hand (scan or take a picture, and convert to PDF). The Fleury's algorithm either call the Prim's algorithm or the Prim's algorithm can be wrote inside the Fleury's algorithm.
+
+2. (50 points): Implement the Fleury's algorithm and Prim's algorithm based on your pseudo code (variables must be matched to your pseudo code). The algorithms must be implemented in one of the following programming language: Java, C, C++, python. The submitted program is recommended in executable format, and a Readme text file is required to explain how to run your program.
+
+3. (30 points): Test the implemented algorithms on the network with 100 vertices. You only need to report one result with a start vertex as the last two digits of your PID.  For example, if your PID is 1234567, you only need to report the Euler circuit start with 67.
+
+
+
+Submission:
+
+(1) Pseudo code of the algorithms (PDF).
+(2) Source file (your program).
+(3) Readme file (text).
+(4) Results of running the algorithm (one text files).
+(5) Screenshot of running the program.
+
+ All files and source code should be added to a folder with your PID as the name of the folder. Then, zip this folder and upload it to Webcourse.
