@@ -29,35 +29,61 @@ class Network:
         weighted_adjacency_array = line.split('\t')[1].split(',')
         return [float(x) for x in weighted_adjacency_array]
 
-class Output:
-    def __init__(self, output_file_name):
-        self.output_file_name = output_file_name
-        self.output = []
-
-    def append_output(self, label_start, label_end, shortest_path, total_cost):
-        single_out = []
-        single_out.append(', '.join([label_start, label_end]))
-        single_out.append(', '.join(shortest_path))
-        single_out.append(str(total_cost))
-        self.output.append('\n'.join(single_out))
-
-    def print(self):
-        for i, output in enumerate(self.output):
-            output_file = ''.join([self.output_file_name, '.', str(i), '.txt'])
-            print(output_file)
-            print(output)
-            print()
-
 class Dijkstra:
     def __init__(self, network: Network):
-        self.labels = network.labels
         self.weighted_adjacency_matrix = network.weighted_adjacency_matrix
 
     def find_shortest_path(self, index_start, index_end):
-        return [1, 2]
+        vertices_distance = self.get_max_vertices_distance()
+        vertices_distance[index_start] = 0
+        already_visited = set()
+        parent_nodes = [None] * len(vertices_distance)
 
-    def find_total_cost(self, shortest_path):
-        return 0
+        while index_end not in already_visited:
+            current_index = self.get_smallest_distance_index(vertices_distance, already_visited)
+            already_visited.add(current_index)
+            # assumes the matrix is a square
+            for i in range(len(vertices_distance)):
+                next_adjacent_node_dist = self.weighted_adjacency_matrix[current_index][i]
+                potential_next_dist = vertices_distance[current_index] + next_adjacent_node_dist
+
+                # this means they aren't connected or already have the minimum
+                if next_adjacent_node_dist < 1 or i in already_visited:
+                    continue
+
+                if vertices_distance[i] > potential_next_dist:
+                    vertices_distance[i] = potential_next_dist
+                    parent_nodes[i] = current_index
+
+        return self.get_output_string(index_start, index_end, vertices_distance, parent_nodes)
+
+    def get_path_nodes(self, parent, index, visited_nodes):
+        if parent[index] is None:
+            visited_nodes += str(index) + ','
+            return visited_nodes
+        visited_nodes = self.get_path_nodes(parent, parent[index], visited_nodes)
+        visited_nodes += str(int(index)) + ','
+        return visited_nodes
+
+    def get_output_string(self, index_start, index_end, vertices_distance, parent_nodes):
+        start_end_nodes = str(index_start) + ',' + str(index_end)
+        nodes_in_path = self.get_path_nodes(parent_nodes, index_end, '')[:-1]
+        distance = str(int(vertices_distance[index_end]))
+        output_string = start_end_nodes + '\n' + nodes_in_path + '\n' + distance + '\n'
+        return output_string
+
+    def get_smallest_distance_index(self, vertices_distance, already_visited):
+        smallest = sys.maxsize
+        smallest_index = None
+        for i in range(len(vertices_distance)):
+            dist = vertices_distance[i]
+            if dist < smallest and i not in already_visited:
+                smallest = dist
+                smallest_index = i
+        return smallest_index
+
+    def get_max_vertices_distance(self):
+        return [sys.maxsize for _ in range(len(self.weighted_adjacency_matrix))]
 
 class Utils:
     @staticmethod
@@ -67,6 +93,11 @@ class Utils:
     @staticmethod
     def shortest_path_to_labels_array(shortest_path, labels):
         return [labels[x] for x in shortest_path]
+
+    @staticmethod
+    def print(output_file_name, output_string):
+        with open(output_file_name, 'w+') as f:
+            f.write(output_string)
 
 def main():
     if len(sys.argv) < 2:
@@ -80,7 +111,6 @@ def main():
 
     network = Network(network_file)
     dijkstra = Dijkstra(network)
-    output = Output(network_file[:-4] + '.out')
 
     if(pid):
         pid_no_letters = Utils.remove_letters(pid)
@@ -88,21 +118,16 @@ def main():
             index_start = int(pid_no_letters[i:(i+2)])
             index_end = int(pid_no_letters[(i+1):(i+3)])
 
-            shortest_path = dijkstra.find_shortest_path(index_start, index_end)
-            total_cost = dijkstra.find_total_cost(shortest_path)
-            shortest_path_labels = Utils.shortest_path_to_labels_array(shortest_path, dijkstra.labels)
-            output.append_output(dijkstra.labels[index_start], dijkstra.labels[index_end], shortest_path_labels, total_cost)
+            output_name = pid + '.' + str(i) + '.out.txt'
+            output_string = dijkstra.find_shortest_path(index_start, index_end)
+            Utils.print(output_name, output_string)
+
     else:
         for index_start, label_start in enumerate(network.labels):
             for index_end, label_end in enumerate(network.labels):
-                if(index_start == index_end):
-                    output.append_output(label_start, label_end, [label_start, label_end], 0)
-                    continue
-                shortest_path = dijkstra.find_shortest_path(index_start, index_end)
-                total_cost = dijkstra.find_total_cost(shortest_path)
-                shortest_path_labels = Utils.shortest_path_to_labels_array(shortest_path, dijkstra.labels)
-                output.append_output(label_start, label_end, shortest_path_labels, total_cost)
-    output.print()
+                output_string = dijkstra.find_shortest_path(index_start, index_end)
+                print(output_string)
+
 
 if __name__== "__main__":
   main()
