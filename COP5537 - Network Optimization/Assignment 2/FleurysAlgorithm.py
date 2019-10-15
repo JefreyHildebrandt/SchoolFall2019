@@ -134,11 +134,11 @@ def main():
         [1, 0, 1],
         [1, 1, 0]
     ]
-    starting_index = 0
+    starting_vertex = 0
     # should print:
     # 0, 1, 2, 0
     #end temp for testing
-    Fleury.fleurys_algorithm(network, starting_index)
+    Fleury.fleurys_algorithm(network, starting_vertex)
 
 if __name__== "__main__":
   main()
