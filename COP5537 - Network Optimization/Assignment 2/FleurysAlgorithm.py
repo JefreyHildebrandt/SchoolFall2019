@@ -72,10 +72,9 @@ class Fleury:
     @staticmethod
     def fleurys_algorithm(network: Network, starting_index: int):
         graph = network.weighted_adjacency_matrix
-        count = 10000
         output_circuit = [starting_index]
 
-        while(count > 0):
+        while(not Fleury.is_graph_empty(graph)):
             adjacent_vertices = graph[starting_index]
             for adjacent_index in range(len(adjacent_vertices)):
                 # assuming the value would be the same in both places for the graph
@@ -94,9 +93,14 @@ class Fleury:
                 else:
                     Fleury.set_value_in_graph(graph, starting_index, adjacent_index, weight)
 
-            count -= 1
-
         print(output_circuit)
+
+    @staticmethod
+    def is_graph_empty(graph):
+        for vertex_connections in graph:
+            if not Fleury.is_disconnected_by_itself(vertex_connections):
+                return False
+        return True
 
     @staticmethod
     def is_disconnected_by_itself(vertex_connections: [int]):
