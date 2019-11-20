@@ -58,6 +58,7 @@ class Prim:
                     weights_for_vertices[adjacent_index] = cur_weight
         return mst_set
 
+    # returns the minimum index that has not yet been visited
     @staticmethod
     def get_min_unvisited(mst_set: set, weights_for_vertices: [int]):
         minimum = sys.maxsize
@@ -70,37 +71,33 @@ class Prim:
 
 class Fleury:
     @staticmethod
-    def fleurys_algorithm(network: Network, starting_index: int):
-        graph = network.weighted_adjacency_matrix
-        output_circuit = [starting_index]
+    def fleurys_algorithm(graph: [[int]], starting_index: int):
+        output_circuit = [str(starting_index)]
+        connectivity = True
 
-        while(not Fleury.is_graph_empty(graph)):
+        # will continue as long as the starting index can link somewhere
+        while(connectivity):
             adjacent_vertices = graph[starting_index]
+            connectivity = False
             for adjacent_index in range(len(adjacent_vertices)):
                 # assuming the value would be the same in both places for the graph
                 weight = graph[starting_index][adjacent_index]
+                # a weight of 0 means there's nothing connected
                 if weight < 1:
                     continue
+                connectivity = True
                 # temporarily remove values from graph
                 Fleury.set_value_in_graph(graph, starting_index, adjacent_index, 0)
                 is_disconnected_by_itself = Fleury.is_disconnected_by_itself(graph[starting_index])
                 is_bridge = Prim.is_bridge(graph, starting_index, adjacent_index)
                 if is_bridge or not is_disconnected_by_itself:
                     # reset values if potential new graph might be a bridge
-                    output_circuit.append(adjacent_index)
+                    output_circuit.append(str(adjacent_index))
                     starting_index = adjacent_index
                     break
                 else:
                     Fleury.set_value_in_graph(graph, starting_index, adjacent_index, weight)
-
-        print(output_circuit)
-
-    @staticmethod
-    def is_graph_empty(graph):
-        for vertex_connections in graph:
-            if not Fleury.is_disconnected_by_itself(vertex_connections):
-                return False
-        return True
+        return output_circuit
 
     @staticmethod
     def is_disconnected_by_itself(vertex_connections: [int]):
@@ -128,17 +125,14 @@ def main():
     starting_vertex = int(pid[-2:])
 
     network = Network(network_file)
-    #temp for testing
-    network.weighted_adjacency_matrix = [
-        [0, 1, 1],
-        [1, 0, 1],
-        [1, 1, 0]
-    ]
-    starting_vertex = 0
-    # should print:
-    # 0, 1, 2, 0
-    #end temp for testing
-    Fleury.fleurys_algorithm(network, starting_vertex)
+
+    output = Fleury.fleurys_algorithm(network.weighted_adjacency_matrix, starting_vertex)
+    formatted_output = ', '.join(output)
+    print(formatted_output)
+    with open('output.txt', 'w') as f:
+        f.write(formatted_output)
+
+
 
 if __name__== "__main__":
   main()
