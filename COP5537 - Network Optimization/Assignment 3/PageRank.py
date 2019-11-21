@@ -38,13 +38,16 @@ class PageRank:
         dampening_base = (1-dampening)/total_pages
         # initialize ranks with default value of 1/N
         page_ranks = [1/total_pages] * total_pages
-        previous_page_ranks = [-1] * total_pages
+        #ensures that the starting value won't break the while loop
+        previous_page_ranks = [-convergence * 2] * total_pages
         # the number of outgoing links that each page has
         outgoing_links = [0] * total_pages
         for i in range(len(graph)):
             outgoing_links[i] = PageRank.count_links(graph[i])
 
         iterations = 0
+
+        # continue until the previous_page_ranks and page_ranks values are less than the convergence value
         while not PageRank.has_converged(previous_page_ranks, page_ranks, convergence):
             previous_page_ranks = page_ranks
             page_ranks = [0] * total_pages
