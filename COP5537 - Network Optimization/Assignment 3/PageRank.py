@@ -52,7 +52,7 @@ class PageRank:
             previous_page_ranks = page_ranks
             page_ranks = [0] * total_pages
 
-            for i in range(len(graph)):
+            for i in range(total_pages):
                 num_links_for_page = outgoing_links[i]
                 self_page_rank = previous_page_ranks[i] / num_links_for_page
 
